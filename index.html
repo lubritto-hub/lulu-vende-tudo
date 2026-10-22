@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Lulu vende tudo: itens à venda antes da mudança para Berlim. Parcelamento sem juros até 10/02/2027, PIX, entrega a combinar.">
+<style>html{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Lulu Vende Tudo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: single centered column, sticky header with cart, filter row, 3→2→1 column product grid, cart as right drawer */
+:root {
+  --bg: #ffffff;
+  --surface: #f6f7f8;
+  --line: #e6e8eb;
+  --fg: #16181b;
+  --muted: #6b7178;
+  --accent: #d8261c;
+  --accent-fg: #ffffff;
+  --ok: #2f6b4a;
+  --warn: #9a6a12;
+  --display: "Anton", "Arial Narrow", Impact, sans-serif;
+  --body: "Barlow", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --radius: 4px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111315; --surface: #1a1d20; --line: #2a2e33; --fg: #eceef0; --muted: #9aa1a8;
+    --accent: #ff5a4e; --accent-fg: #0f1720; --ok: #7fc39d; --warn: #e0b45c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111315; --surface: #1a1d20; --line: #2a2e33; --fg: #eceef0; --muted: #9aa1a8;
+  --accent: #ff5a4e; --accent-fg: #0f1720; --ok: #7fc39d; --warn: #e0b45c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; }
+
+/* header */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
+.brand { font-family: var(--display); font-size: 22px; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
+.brand span { color: var(--accent); }
+.cart-btn { display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 8px 14px 8px 12px; font-size: 14px; }
+.cart-btn:hover { border-color: var(--fg); }
+.cart-btn .count { font-family: var(--mono); font-weight: 600; font-size: 13px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--fg); color: var(--bg); display: inline-grid; place-items: center; }
+.cart-btn svg { width: 18px; height: 18px; }
+
+.notice { background: var(--surface); border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.notice .wrap { padding-block: 8px; }
+
+/* hero */
+.hero { padding-block: 56px 36px; display: grid; gap: 28px; }
+.route { font-family: var(--mono); font-weight: 600; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.route .dash { flex: 0 0 48px; border-top: 2px solid var(--fg); }
+.route .stamp { margin-left: auto; border: 2px solid var(--accent); color: var(--accent); padding: 3px 8px; transform: rotate(-3deg); }
+.hero h1 { font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: clamp(60px, 13vw, 150px); line-height: 0.92; letter-spacing: 0.005em; margin: 0 0 0 -0.03em; max-width: 10ch; text-wrap: balance; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero h1 small { display: block; font-family: var(--mono); font-weight: 600; font-size: clamp(16px, 2.4vw, 22px); letter-spacing: 0.1em; color: var(--muted); margin-top: 14px; }
+.hero p.lead { margin: 0; max-width: 56ch; color: var(--muted); font-size: 17px; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.fact { padding: 18px 20px 18px 0; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.fact + .fact { padding-left: 20px; border-left: 1px solid var(--line); }
+.fact .k { font-family: var(--mono); font-weight: 600; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.fact .v { font-size: 15px; font-weight: 500; }
+.fact .s { font-size: 13px; color: var(--muted); }
+.copy { border: 0; background: none; padding: 0; color: var(--accent); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; justify-self: start; }
+.pix { font-family: var(--mono); font-weight: 600; font-size: 17px; letter-spacing: 0.04em; }
+
+/* filters */
+.filters { display: flex; gap: 8px; overflow-x: auto; padding-block: 4px 20px; scrollbar-width: none; }
+.filters::-webkit-scrollbar { display: none; }
+.chip { flex: none; border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 7px 14px; font-family: var(--mono); font-weight: 600; font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+.chip:hover { border-color: var(--fg); }
+.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.chip .n { font-size: 12px; opacity: 0.6; margin-left: 5px; }
+
+/* grid */
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px 24px; padding-bottom: 80px; }
+.card { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.thumb { position: relative; aspect-ratio: 1 / 1; max-width: 100%; border-radius: var(--radius); background: var(--surface); overflow: hidden; border: 0; padding: 0; display: grid; place-items: center; color: var(--muted); }
+.thumb img { width: 100%; height: 100%; object-fit: contain; }
+.thumb svg { width: 44px; height: 44px; opacity: 0.55; }
+.thumb:hover img { transform: scale(1.02); }
+.thumb img { transition: transform .4s ease; }
+.badge { position: absolute; top: 10px; left: 10px; font-family: var(--mono); font-weight: 600; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 7px; border-radius: 2px; background: var(--bg); color: var(--fg); }
+.badge.res { color: var(--warn); }
+.badge.sold { background: var(--fg); color: var(--bg); }
+.badge.ex { left: auto; right: 10px; color: var(--muted); }
+.card.is-sold .thumb > *:not(.badge) { opacity: 0.35; }
+.meta-top { display: flex; justify-content: space-between; gap: 8px; font-family: var(--mono); font-weight: 600; font-size: 13px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.card h3 { margin: 0; font-size: 16px; font-weight: 500; line-height: 1.35; }
+.card h3 button { all: unset; cursor: pointer; }
+.card h3 button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.card h3 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cond { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; flex: none; background: currentColor; }
+.c-none .dot { color: var(--line); } .c-novo .dot { color: var(--ok); } .c-leve .dot { color: var(--warn); } .c-visivel .dot { color: var(--muted); }
+.price-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.price { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 24px; font-weight: 700; letter-spacing: 0; line-height: 1.1; }
+.ref { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ref s { text-decoration-thickness: 1px; }
+.save { color: var(--ok); }
+.inst { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.add { border: 1px solid var(--fg); background: var(--bg); border-radius: 2px; padding: 8px 14px; font-family: var(--mono); font-size: 14px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+.add:hover { background: var(--fg); color: var(--bg); }
+.add.in { background: var(--fg); color: var(--bg); }
+.add:disabled { border-color: var(--line); color: var(--muted); background: var(--bg); cursor: default; }
+.empty { grid-column: 1 / -1; color: var(--muted); padding-block: 40px; }
+
+/* dialogs */
+dialog { border: 0; padding: 0; background: var(--bg); color: var(--fg); max-width: 100%; }
+dialog::backdrop { background: rgba(10, 12, 14, 0.38); }
+.drawer { margin: 0 0 0 auto; height: 100%; max-height: 100%; width: min(440px, 100%); display: flex; flex-direction: column; }
+.drawer[open] { display: flex; }
+.dhead { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--line); padding-top: calc(18px + env(safe-area-inset-top, 0px)); }
+.dhead h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 26px; text-transform: uppercase; letter-spacing: 0.03em; }
+.x { border: 0; background: none; font-size: 22px; line-height: 1; padding: 6px; color: var(--muted); }
+.x:hover { color: var(--fg); }
+.dbody { flex: 1; overflow-y: auto; padding: 8px 20px 20px; display: grid; gap: 20px; align-content: start; }
+.lines { display: grid; }
+.line { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding-block: 12px; border-bottom: 1px solid var(--line); }
+.line .mini { width: 56px; height: 42px; border-radius: 6px; background: var(--surface); display: grid; place-items: center; overflow: hidden; color: var(--muted); }
+.line .mini img { width: 100%; height: 100%; object-fit: contain; }
+.line .mini svg { width: 20px; height: 20px; opacity: 0.6; }
+.line .nm { font-size: 14px; }
+.line .rm { border: 0; background: none; padding: 0; font-size: 12px; color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.line .pr { font-family: var(--mono); font-weight: 600; font-size: 16px; font-variant-numeric: tabular-nums; }
+.total { display: flex; justify-content: space-between; align-items: baseline; }
+.total .lbl { font-family: var(--mono); font-weight: 600; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+.total .val { font-family: var(--mono); font-weight: 700; font-size: 28px; font-variant-numeric: tabular-nums; }
+.field { display: grid; gap: 6px; }
+.field label { font-family: var(--mono); font-weight: 600; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+.field input, .field select { width: 100%; border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; background: var(--bg); }
+.plan { list-style: none; margin: 0; padding: 12px 14px; background: var(--surface); border-radius: 2px; display: grid; gap: 4px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.plan li { display: flex; justify-content: space-between; gap: 12px; }
+.plan li span:last-child { font-family: var(--mono); font-weight: 600; font-size: 15px; }
+.dfoot { padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); display: grid; gap: 10px; }
+.wa { display: flex; justify-content: center; align-items: center; gap: 10px; text-decoration: none; background: var(--fg); color: var(--bg); padding: 14px; border-radius: 2px; font-family: var(--mono); font-weight: 600; font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; }
+.wa:hover { opacity: 0.9; }
+.wa[aria-disabled="true"] { opacity: 0.35; pointer-events: none; }
+.fine { font-size: 12px; color: var(--muted); text-align: center; margin: 0; }
+.fine b { font-family: var(--mono); font-weight: 600; color: var(--fg); }
+
+.modal { width: min(820px, calc(100% - 32px)); border-radius: 4px; margin: auto; max-height: calc(100% - 32px); overflow-y: auto; overscroll-behavior: contain; }
+.mgrid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+.mgal { background: var(--surface); display: grid; gap: 8px; align-content: start; padding: 0; }
+.mgal .main { aspect-ratio: 1 / 1; display: grid; place-items: center; color: var(--muted); overflow: hidden; }
+.mgal .main img { width: 100%; height: 100%; object-fit: contain; }
+.mgal .main svg { width: 64px; height: 64px; opacity: 0.5; }
+.mcap { margin: 0; padding: 0 12px; font-size: 12px; color: var(--muted); min-height: 1.5em; }
+.mcap.ilu { color: var(--warn); }
+.official { font-size: 14px; color: var(--accent); text-underline-offset: 3px; justify-self: start; }
+.badge.ilu { top: auto; bottom: 10px; color: var(--muted); }
+.mthumbs { display: flex; gap: 6px; padding: 0 10px 10px; overflow-x: auto; }
+.mthumbs button { flex: none; width: 48px; height: 48px; padding: 0; border: 1px solid transparent; border-radius: 6px; overflow: hidden; background: none; }
+.mthumbs button[aria-current="true"] { border-color: var(--fg); }
+.mthumbs img { width: 100%; height: 100%; object-fit: cover; background: var(--bg); }
+.minfo { padding: 24px; display: grid; gap: 16px; align-content: start; position: relative; min-width: 0; }
+.xbar { position: sticky; top: 0; height: 0; z-index: 3; display: flex; justify-content: flex-end; }
+.xbar .x { margin: 10px 10px 0 0; width: 48px; height: 48px; display: grid; place-items: center; padding: 0; border-radius: 50%; background: var(--bg); color: var(--fg); font-size: 34px; line-height: 1; box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18); }
+.xbar .x:hover { background: var(--fg); color: var(--bg); }
+.minfo .add { width: 100%; padding: 16px; font-size: 18px; letter-spacing: 0.08em; }
+.minfo h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 30px; line-height: 1.05; text-transform: uppercase; letter-spacing: 0.02em; padding-right: 48px; text-wrap: balance; }
+dl.spec { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); border-top: 1px solid var(--line); }
+dl.spec dt, dl.spec dd { margin: 0; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+dl.spec dt { color: var(--muted); padding-right: 20px; }
+dl.spec dd { text-align: right; font-variant-numeric: tabular-nums; }
+.comment { font-size: 14px; color: var(--fg); margin: 0; }
+.offer-note { margin: 0; max-width: 56ch; font-size: 15px; }
+.offer-note b { font-family: var(--mono); font-weight: 700; font-size: 17px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-right: 4px; }
+.offer { display: grid; gap: 8px; padding-top: 16px; border-top: 1px solid var(--line); }
+.offer .k { font-family: var(--mono); font-weight: 600; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.offer .hint { margin: 0; font-size: 13px; color: var(--muted); }
+.money { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 2px; background: var(--bg); }
+.money:focus-within { border-color: var(--fg); }
+.money span { padding-left: 12px; font-family: var(--mono); font-weight: 600; color: var(--muted); }
+.money input { flex: 1; min-width: 0; border: 0; background: none; padding: 10px 12px 10px 6px; font-family: var(--mono); font-size: 17px; font-weight: 600; outline: none; }
+.wa.small { padding: 12px; font-size: 14px; }
+
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 2px; font-family: var(--mono); font-weight: 600; font-size: 14px; letter-spacing: 0.04em; z-index: 50; }
+
+footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+footer .wrap { padding-block: 24px 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+
+@media (max-width: 860px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 680px) {
+  .facts { grid-template-columns: 1fr; }
+  .fact, .fact + .fact { padding: 14px 0; border-left: 0; }
+  .fact + .fact { border-top: 1px solid var(--line); }
+  .mgrid { grid-template-columns: 1fr; }
+  .hero { padding-block: 36px 28px; }
+}
+@media (max-width: 520px) {
+  .wrap { padding-inline: 16px; }
+  .grid { grid-template-columns: 1fr; gap: 32px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<script>
+/* =====================================================================
+   LISTA DE ITENS — edite aqui
+   ---------------------------------------------------------------------
+   categoria : "musica" | "tecnologia" | "moveis" | "decoracao" | "roupas"
+   ano       : ano de compra (número)
+   estado    : "novo"    = sem marcas de uso
+               "leve"    = marcas leves de uso
+               "visivel" = marcas visíveis de uso
+   preco     : valor de venda em reais (número, sem R$)
+   precoNovo : quanto custa um novo hoje, para comparação
+   comentario: texto livre (o que acompanha, defeitos, motivo etc.)
+   fotos     : [{ src, legenda, ilustrativa? }] na ordem da galeria; a primeira é a capa
+   comparavel: true quando precoNovo é do mesmo modelo; false = "novo similar"
+   link      : página do produto no site oficial da marca (opcional)
+   status    : "disponivel" | "reservado" | "vendido"
+   exemplo   : true enquanto for item de exemplo (apague quando for real)
+   ===================================================================== */
+const ITENS = [
+  {"id": "sintetizador-roland-xps-30", "nome": "Sintetizador Roland XPS-30 — 61 teclas", "categoria": "musica", "ano": null, "estado": "visivel", "preco": 3200, "precoNovo": 6544, "comparavel": true, "comentario": "Sintetizador de 61 teclas, preto com detalhes vermelhos. Poeira e marcas visíveis nas teclas e no gabinete.", "link": "https://www.roland.com/br/products/xps-30/", "linkNome": "Roland", "fotos": [{"src": "fotos/sintetizador-roland-xps-30-4.jpg", "legenda": "Imagem ilustrativa", "ilustrativa": true}, {"src": "fotos/sintetizador-roland-xps-30-1.jpg", "legenda": "Foto real: visão geral, sem retoque no produto"}, {"src": "fotos/sintetizador-roland-xps-30-2.jpg", "legenda": "Foto real: detalhe, sem retoque no produto"}, {"src": "fotos/sintetizador-roland-xps-30-3.jpg", "legenda": "Foto real: detalhe, sem retoque no produto"}], "status": "disponivel"},
+  {"id": "loop-station-boss-rc-30", "nome": "Loop Station BOSS RC-30", "categoria": "musica", "ano": null, "estado": "visivel", "preco": 1200, "precoNovo": 2496, "comparavel": true, "comentario": "Looper de dois pedais e duas trilhas, com efeitos de loop e ritmos. Marcas de uso visíveis nas superfícies.", "link": "https://www.boss.info/br/products/rc-30/", "linkNome": "BOSS", "fotos": [{"src": "fotos/loop-station-boss-rc-30-capa.jpg", "legenda": "Capa tratada a partir das fotos reais"}, {"src": "fotos/loop-station-boss-rc-30-1.jpg", "legenda": "Foto real"}, {"src": "fotos/loop-station-boss-rc-30-2.jpg", "legenda": "Imagem ilustrativa", "ilustrativa": true}], "status": "disponivel"},
+  {"id": "amplificador-acoustic-a50", "nome": "Amplificador Acoustic A15V", "categoria": "musica", "ano": null, "estado": "visivel", "preco": 450, "precoNovo": 3195, "comparavel": false, "comentario": "Amplificador para violão e voz com 2 entradas (XLR e P10), equalização de 3 bandas, chorus, entrada auxiliar e saída para fone. Desgaste visível no painel e no revestimento da base e dos cantos.", "fotos": [{"src": "fotos/amplificador-acoustic-a50-capa.jpg", "legenda": "Capa tratada a partir das fotos reais"}, {"src": "fotos/amplificador-acoustic-a50-1.jpg", "legenda": "Foto real"}], "status": "disponivel"},
+  {"id": "pedaleira-boss-me-20", "nome": "Pedaleira BOSS ME-20", "categoria": "musica", "ano": null, "estado": "visivel", "preco": 400, "precoNovo": 4199, "comparavel": false, "comentario": "Pedaleira multiefeitos para guitarra com pedal de expressão. Riscos e desgaste visíveis no gabinete.", "link": "https://www.boss.info/br/products/me-20/", "linkNome": "BOSS", "fotos": [{"src": "fotos/pedaleira-boss-me-20-capa.jpg", "legenda": "Capa tratada a partir das fotos reais"}, {"src": "fotos/pedaleira-boss-me-20-1.jpg", "legenda": "Foto real"}, {"src": "fotos/pedaleira-boss-me-20-2.jpg", "legenda": "Imagem ilustrativa", "ilustrativa": true}], "status": "disponivel"},
+  {"id": "pedal-tc-electronic-grand-magus", "nome": "Pedal TC Electronic Grand Magus Distortion", "categoria": "musica", "ano": null, "estado": "visivel", "preco": 250, "precoNovo": 597, "comparavel": true, "comentario": "Pedal de distorção com controles Gain, Volume e Tone e true bypass. Marcas superficiais de uso.", "link": "https://www.tcelectronic.com/en/products/0709-AFH", "linkNome": "TC Electronic", "fotos": [{"src": "fotos/pedal-tc-electronic-grand-magus-capa.jpg", "legenda": "Capa tratada a partir das fotos reais"}, {"src": "fotos/pedal-tc-electronic-grand-magus-1.jpg", "legenda": "Foto real"}, {"src": "fotos/pedal-tc-electronic-grand-magus-2.jpg", "legenda": "Imagem ilustrativa", "ilustrativa": true}], "status": "disponivel"},
+  {"id": "playstation-5-dois-controles-1tb-extra", "nome": "PlayStation 5 + 2 controles + 1 TB extra", "categoria": "tecnologia", "ano": null, "estado": "leve", "preco": 3200, "precoNovo": 4649, "comparavel": false, "comentario": "Vendido somente como conjunto: PlayStation 5 Slim, dois controles DualSense (preto e branco) e 1 TB de armazenamento extra. Sem jogos em mídia física. Marcas leves de uso nos controles.", "link": "https://www.playstation.com/pt-br/ps5/", "linkNome": "PlayStation", "fotos": [{"src": "fotos/playstation-5-dois-controles-1tb-extra-1.jpg", "legenda": "Capa tratada a partir das fotos reais"}, {"src": "fotos/playstation-5-dois-controles-1tb-extra-2.jpg", "legenda": "Foto real: controles"}, {"src": "fotos/playstation-5-dois-controles-1tb-extra-3.jpg", "legenda": "Foto real: console, computador ao lado não incluso"}, {"src": "fotos/playstation-5-dois-controles-1tb-extra-4.jpg", "legenda": "Imagem ilustrativa", "ilustrativa": true}], "status": "disponivel"},
+  {"id": "kit-philips-8-lampadas-hub", "nome": "Kit Philips — 8 lâmpadas + hub", "categoria": "tecnologia", "ano": 2017, "estado": null, "preco": 1250, "precoNovo": 3232, "comparavel": false, "comentario": "Vendido somente como conjunto: 8 lâmpadas inteligentes Philips + 1 hub, funcionando perfeitamente. As fotos mostram parte das lâmpadas instaladas, em vermelho e em azul.", "fotos": [{"src": "fotos/kit-philips-8-lampadas-hub-1.jpg", "legenda": "Parte do kit instalado, luz vermelha (foto tratada)"}, {"src": "fotos/kit-philips-8-lampadas-hub-2.jpg", "legenda": "Parte do kit instalado, luz azul (foto tratada)"}, {"src": "fotos/kit-philips-8-lampadas-hub-3.jpg", "legenda": "Parte do kit instalado, luz vermelha (foto original)"}, {"src": "fotos/kit-philips-8-lampadas-hub-4.jpg", "legenda": "Parte do kit instalado, luz azul (foto original)"}], "status": "disponivel"},
+  {"id": "gopro-hero-8-acessorios", "nome": "GoPro HERO8 + acessórios", "categoria": "tecnologia", "ano": null, "estado": null, "preco": 1100, "precoNovo": 2714, "comparavel": false, "comentario": "GoPro HERO8 com vários acessórios. Fotos reais em breve.", "fotos": [{"src": "fotos/gopro-hero-8-acessorios-1.jpg", "legenda": "Imagem ilustrativa", "ilustrativa": true}], "status": "disponivel"},
+  {"id": "google-nest-hub", "nome": "Google Nest Hub — tela inteligente", "categoria": "tecnologia", "ano": null, "estado": "visivel", "preco": 400, "precoNovo": 809, "comparavel": false, "comentario": "Tela inteligente que também toca música, com moldura clara e base de tecido cinza. Liga normalmente. Marcas visíveis na tela e na moldura.", "fotos": [{"src": "fotos/google-nest-hub-1.jpg", "legenda": "Capa tratada a partir das fotos reais"}, {"src": "fotos/google-nest-hub-2.jpg", "legenda": "Foto real: frente"}, {"src": "fotos/google-nest-hub-3.jpg", "legenda": "Foto real: traseira"}, {"src": "fotos/google-nest-hub-4.jpg", "legenda": "Imagem ilustrativa", "ilustrativa": true}], "status": "disponivel"},
+  {"id": "kit-teclado-mouse-lenovo", "nome": "Kit teclado e mouse sem fio Lenovo", "categoria": "tecnologia", "ano": null, "estado": "leve", "preco": 80, "precoNovo": 132, "comparavel": false, "comentario": "Teclado e mouse sem fio pretos, vendidos juntos, com um único receptor USB. Teclado com layout americano (sem tecla Ç). Marcas leves de uso nas teclas.", "fotos": [{"src": "fotos/kit-teclado-mouse-lenovo-capa.jpg", "legenda": "Capa tratada a partir das fotos reais"}, {"src": "fotos/kit-teclado-mouse-lenovo-1.jpg", "legenda": "Foto real"}], "status": "disponivel"},
+  {"id": "mesa-flexispot-regulagem-altura", "nome": "Mesa FlexiSpot com regulagem elétrica de altura", "categoria": "moveis", "ano": 2025, "estado": null, "preco": 450, "precoNovo": 775, "comparavel": false, "comentario": "Mesa com regulagem elétrica de altura. Fotos reais em breve.", "fotos": [{"src": "fotos/mesa-flexispot-regulagem-altura-1.jpg", "legenda": "Imagem ilustrativa", "ilustrativa": true}], "status": "disponivel"},
+];
+
+const CONTATO = {
+  whatsapp: "5511992941953",
+  whatsappTexto: "(11) 99294-1953",
+  pix: "11 992941953",
+  banco: "Nubank",
+  ultimaParcela: new Date(2027, 1, 10), // 10 de fevereiro de 2027
+};
+</script>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">Lulu <span>vende</span> tudo</div>
+    <button class="cart-btn" id="open-cart" type="button" aria-label="Abrir carrinho">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+      Carrinho <span class="count" id="cart-count">0</span>
+    </button>
+  </div>
+</header>
+<div class="notice" id="notice" hidden><div class="wrap">Os itens abaixo são exemplos. A lista real entra em breve.</div></div>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="route"><span>São Paulo</span><span class="dash"></span><span>Berlin</span><span class="stamp">Alles muss raus</span></div>
+    <h1>Tudo <em>precisa</em> sair.<small>Alles muss raus · antes da mudança</small></h1>
+    <p class="offer-note"><b>Aceito ofertas.</b> Abra qualquer item, diga quanto quer pagar e a proposta vai direto para o meu WhatsApp.</p>
+    <div class="facts">
+      <div class="fact">
+        <span class="k">Parcelamento</span>
+        <span class="v" id="fact-parc">Até 5x sem juros</span>
+        <span class="s" id="fact-parc-s">Última parcela em 10/02/2027</span>
+      </div>
+      <div class="fact">
+        <span class="k">PIX · Nubank</span>
+        <span class="v pix" id="pix-key">11 992941953</span>
+        <button class="copy" type="button" id="copy-pix">Copiar chave</button>
+      </div>
+      <div class="fact">
+        <span class="k">Entrega</span>
+        <span class="v">A combinar</span>
+        <span class="s">Retirada ou entrega, combinamos pelo WhatsApp</span>
+      </div>
+    </div>
+  </section>
+
+  <nav class="filters" id="filters" aria-label="Categorias"></nav>
+  <section class="grid" id="grid" aria-live="polite"></section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Dúvidas? WhatsApp <span id="foot-wa">(11) 99294-1953</span></span>
+    <span>Preços em reais. Itens usados, vendidos no estado descrito.</span>
+  </div>
+</footer>
+
+<dialog class="drawer" id="cart" aria-labelledby="cart-title">
+  <div class="dhead"><h2 id="cart-title">Carrinho</h2><button class="x" type="button" data-close aria-label="Fechar">×</button></div>
+  <div class="dbody" id="cart-body"></div>
+  <div class="dfoot">
+    <a class="wa" id="wa-link" href="#" target="_blank" rel="noopener">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.5 7.4L3 20.5l1.6-5.3A8.4 8.4 0 1 1 21 11.5z"/></svg>
+      Finalizar pelo WhatsApp
+    </a>
+    <p class="fine">Abre uma conversa com <b>(11) 99294-1953</b> com o seu pedido já escrito.</p>
+  </div>
+</dialog>
+
+<dialog class="modal" id="detail" aria-labelledby="d-title"></dialog>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+  const CATS = {
+    tudo: "Tudo",
+    musica: "Música",
+    tecnologia: "Tecnologia",
+    moveis: "Móveis",
+    decoracao: "Decoração",
+    roupas: "Roupas, sapatos e acessórios",
+  };
+  const CAT_SHORT = { musica: "Música", tecnologia: "Tecnologia", moveis: "Móveis", decoracao: "Decoração", roupas: "Roupas & acessórios" };
+  const ESTADO = { novo: "Sem marcas de uso", leve: "Marcas leves de uso", visivel: "Marcas visíveis de uso" };
+  const ICON = {
+    musica: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+    tecnologia: '<rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M2 20h20"/>',
+    moveis: '<path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><path d="M3 11h18v5H3z"/><path d="M5 16v3M19 16v3"/>',
+    decoracao: '<path d="M8 21h8l1-8H7z"/><path d="M12 13V7"/><path d="M12 9C10 6 7 6 7 6s0 3 5 3z"/><path d="M12 7c2-3 5-3 5-3s0 3-5 3z"/>',
+    roupas: '<path d="M20.4 3.5 16 2a4 4 0 0 1-8 0L3.6 3.5a2 2 0 0 0-1.3 2.2l.6 3.5a1 1 0 0 0 1 .8H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.1a1 1 0 0 0 1-.8l.6-3.5a2 2 0 0 0-1.3-2.2z"/>',
+  };
+  const icon = (c) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[c] || ICON.decoracao}</svg>`;
+  const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: v % 1 ? 2 : 0 });
+  const brl2 = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const $ = (id) => document.getElementById(id);
+  const byId = Object.fromEntries(ITENS.map((i) => [i.id, i]));
+
+  /* ---- parcelamento: 1ª no fechamento, demais todo dia 10 até a última ---- */
+  function datasParcelas(hoje = new Date()) {
+    const datas = [];
+    let d = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 10);
+    while (d <= CONTATO.ultimaParcela) { datas.push(new Date(d)); d = new Date(d.getFullYear(), d.getMonth() + 1, 10); }
+    return datas; // datas das parcelas após a primeira
+  }
+  const MAX_PARC = 1 + datasParcelas().length;
+  function dividir(total, n) {
+    const cents = Math.round(total * 100);
+    const base = Math.floor(cents / n);
+    return Array.from({ length: n }, (_, i) => (i === n - 1 ? cents - base * (n - 1) : base) / 100);
+  }
+  const fmtData = (d) => d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const mesCurto = (d) => d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
+
+  /* ---- estado ---- */
+  const store = {
+    get(k, f) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : f; } catch { return f; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  };
+  let cart = store.get("bazar-cart", []).filter((id) => byId[id] && byId[id].status !== "vendido");
+  let filtro = "tudo";
+  let parcelas = Math.min(store.get("bazar-parc", MAX_PARC), MAX_PARC);
+  let nome = store.get("bazar-nome", "");
+
+  /* ---- hero facts ---- */
+  $("notice").hidden = !ITENS.some((i) => i.exemplo);
+  $("fact-parc").textContent = MAX_PARC > 1 ? `Até ${MAX_PARC}x sem juros` : "À vista";
+  const pd = datasParcelas();
+  $("fact-parc-s").textContent = MAX_PARC > 1
+    ? `1ª no fechamento, depois todo dia 10 (${pd.map(mesCurto).join(", ")})`
+    : "Prazo de parcelamento encerrado";
+  $("pix-key").textContent = CONTATO.pix;
+
+  /* ---- filtros ---- */
+  function renderFilters() {
+    const counts = { tudo: ITENS.length };
+    ITENS.forEach((i) => (counts[i.categoria] = (counts[i.categoria] || 0) + 1));
+    $("filters").innerHTML = Object.entries(CATS)
+      .map(([k, label]) => `<button class="chip" type="button" data-cat="${k}" aria-pressed="${filtro === k}">${label}<span class="n">${counts[k] || 0}</span></button>`)
+      .join("");
+  }
+  $("filters").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-cat]"); if (!b) return;
+    filtro = b.dataset.cat; renderFilters(); renderGrid();
+  });
+
+  /* ---- cards ---- */
+  const fsrc = (f) => (typeof f === "string" ? f : f.src);
+  const fcap = (f) => (typeof f === "string" ? "" : f.legenda || "");
+  function thumbHTML(item) {
+    let badge = "";
+    if (item.status === "vendido") badge = '<span class="badge sold">Vendido</span>';
+    else if (item.status === "reservado") badge = '<span class="badge res">Reservado</span>';
+    const ex = item.exemplo ? '<span class="badge ex">Exemplo</span>' : "";
+    const capa = item.fotos && item.fotos[0];
+    const ilu = capa && capa.ilustrativa ? '<span class="badge ilu">Imagem ilustrativa</span>' : "";
+    const media = capa ? `<img src="${esc(fsrc(capa))}" alt="${esc(item.nome)}" loading="lazy">` : icon(item.categoria);
+    return media + badge + ex + ilu;
+  }
+  function addBtn(item) {
+    if (item.status === "vendido") return '<button class="add" type="button" disabled>Vendido</button>';
+    const inCart = cart.includes(item.id);
+    return `<button class="add ${inCart ? "in" : ""}" type="button" data-add="${item.id}">${inCart ? "No carrinho ✓" : "Adicionar"}</button>`;
+  }
+  const temNovo = (item) => item.precoNovo > item.preco;
+  const comparavel = (item) => item.comparavel === true && temNovo(item);
+  const pct = (item) => Math.round((1 - item.preco / item.precoNovo) * 100);
+  function desconto(item) {
+    if (!temNovo(item)) return "";
+    return `<span class="save">${Math.round((1 - item.preco / item.precoNovo) * 100)}% abaixo</span>`;
+  }
+  function renderGrid() {
+    const list = ITENS.filter((i) => filtro === "tudo" || i.categoria === filtro)
+      .sort((a, b) => (a.status === "vendido") - (b.status === "vendido"));
+    if (!list.length) { $("grid").innerHTML = '<p class="empty">Nada nesta categoria por enquanto.</p>'; return; }
+    $("grid").innerHTML = list.map((item) => `
+      <article class="card ${item.status === "vendido" ? "is-sold" : ""}">
+        <button class="thumb" type="button" data-open="${item.id}" aria-label="Ver detalhes de ${esc(item.nome)}">${thumbHTML(item)}</button>
+        <div class="meta-top"><span>${CAT_SHORT[item.categoria] || ""}</span></div>
+        <h3><button type="button" data-open="${item.id}">${esc(item.nome)}</button></h3>
+        <div class="cond c-${item.estado || "none"}"><span class="dot"></span>${ESTADO[item.estado] ? ESTADO[item.estado] : "Estado: não informado"}</div>
+        <div class="price-row">
+          <div>
+            <div class="price">${brl(item.preco)}</div>
+            ${comparavel(item) ? `<div class="ref">Novo: <s>${brl(item.precoNovo)}</s> · ${desconto(item)}</div>`
+              : temNovo(item) ? `<div class="ref"><span class="save">${pct(item)}% abaixo</span> de um novo similar</div>` : ""}
+            ${MAX_PARC > 1 && item.status !== "vendido" ? `<div class="inst">até ${MAX_PARC}x de ${brl2(item.preco / MAX_PARC)} sem juros</div>` : ""}
+          </div>
+          ${addBtn(item)}
+        </div>
+      </article>`).join("");
+  }
+  document.addEventListener("click", (e) => {
+    const add = e.target.closest("[data-add]");
+    if (add) { toggle(add.dataset.add); return; }
+    const op = e.target.closest("[data-open]");
+    if (op) openDetail(op.dataset.open);
+  });
+
+  function toggle(id) {
+    const item = byId[id]; if (!item || item.status === "vendido") return;
+    if (cart.includes(id)) { cart = cart.filter((x) => x !== id); toast("Removido do carrinho"); }
+    else { cart.push(id); toast(item.status === "reservado" ? "Adicionado. Este item está reservado, vou te avisar se liberar." : "Adicionado ao carrinho"); }
+    store.set("bazar-cart", cart);
+    renderGrid(); renderCart();
+    if ($("detail").open) openDetail(id, true);
+  }
+
+  /* ---- detalhe ---- */
+  function openDetail(id, keep) {
+    const item = byId[id]; if (!item) return;
+    const fotos = item.fotos || [];
+    const d = $("detail");
+    d.innerHTML = `
+      <div class="xbar"><button class="x" type="button" data-close aria-label="Fechar">×</button></div>
+      <div class="mgrid">
+        <div class="mgal">
+          <div class="main" id="d-main">${fotos.length ? `<img src="${esc(fsrc(fotos[0]))}" alt="${esc(item.nome)}">` : icon(item.categoria)}</div>
+          <p class="mcap ${fotos[0] && fotos[0].ilustrativa ? "ilu" : ""}" id="d-cap">${fotos.length ? esc(fcap(fotos[0])) : "Fotos em breve"}</p>
+          ${fotos.length > 1 ? `<div class="mthumbs">${fotos.map((f, i) => `<button type="button" data-foto="${i}" aria-current="${i === 0}" aria-label="Foto ${i + 1}: ${esc(fcap(f))}"><img src="${esc(fsrc(f))}" alt=""></button>`).join("")}</div>` : ""}
+        </div>
+        <div class="minfo">
+          <div class="meta-top"><span>${CAT_SHORT[item.categoria] || ""}${item.exemplo ? " · Exemplo" : ""}</span></div>
+          <h2 id="d-title">${esc(item.nome)}</h2>
+          <div>
+            <div class="price">${brl(item.preco)}</div>
+            ${MAX_PARC > 1 && item.status !== "vendido" ? `<div class="inst">até ${MAX_PARC}x de ${brl2(item.preco / MAX_PARC)} sem juros</div>` : ""}
+          </div>
+          <dl class="spec">
+            <dt>Estado</dt><dd>${ESTADO[item.estado] || "Não informado"}</dd>
+            ${temNovo(item) ? `<dt>${comparavel(item) ? "Valor de um novo" : "Novo similar (referência)"}</dt><dd>${brl(item.precoNovo)}</dd>
+            <dt>Economia</dt><dd>${brl(item.precoNovo - item.preco)} (${pct(item)}%)</dd>` : ""}
+            <dt>Situação</dt><dd>${{ disponivel: "Disponível", reservado: "Reservado", vendido: "Vendido" }[item.status] || "Disponível"}</dd>
+          </dl>
+          ${item.comentario ? `<p class="comment">${esc(item.comentario)}</p>` : ""}
+          ${item.link ? `<a class="official" href="${esc(item.link)}" target="_blank" rel="noopener">Ver no site oficial ${esc(item.linkNome || "")} ↗</a>` : ""}
+          <div>${addBtn(item)}</div>
+          ${item.status !== "vendido" ? `<div class="offer">
+            <label class="k" for="oferta">Fazer uma oferta</label>
+            <div class="money"><span>R$</span><input id="oferta" type="text" inputmode="decimal" autocomplete="off" placeholder="Quanto você quer pagar?"></div>
+            <a class="wa small" id="oferta-wa" href="#" target="_blank" rel="noopener" aria-disabled="true">Enviar oferta pelo WhatsApp</a>
+            <p class="hint">Anunciado por ${brl(item.preco)}. Aceito ofertas, a resposta vem pelo WhatsApp.</p>
+          </div>` : ""}
+        </div>
+      </div>`;
+    d.querySelectorAll("[data-foto]").forEach((b) => b.addEventListener("click", () => {
+      const f = fotos[+b.dataset.foto];
+      $("d-main").innerHTML = `<img src="${esc(fsrc(f))}" alt="${esc(item.nome)}">`;
+      $("d-cap").textContent = fcap(f);
+      $("d-cap").classList.toggle("ilu", !!f.ilustrativa);
+      d.querySelectorAll("[data-foto]").forEach((x) => x.setAttribute("aria-current", x === b));
+    }));
+    const of = $("oferta");
+    if (of) of.addEventListener("input", () => {
+      const v = valorDigitado(of.value);
+      const a = $("oferta-wa");
+      if (!v) { a.setAttribute("aria-disabled", "true"); a.href = "#"; return; }
+      const msg = `Olá! Quero fazer uma oferta pelo ${item.nome} (anunciado por ${brl(item.preco)}) no Lulu Vende Tudo: ${brl2(v)}. Podemos conversar?`;
+      a.href = `https://wa.me/${CONTATO.whatsapp}?text=${encodeURIComponent(msg)}`;
+      a.removeAttribute("aria-disabled");
+    });
+    if (!keep && !d.open) d.showModal();
+  }
+
+  /* "1.200", "1200,50", "R$ 900" -> número; vazio ou zero -> 0 */
+  function valorDigitado(txt) {
+    const t = String(txt).replace(/[^\d,]/g, "").replace(",", ".");
+    const v = parseFloat(t);
+    return v > 0 ? Math.round(v * 100) / 100 : 0;
+  }
+  let ofertaCarrinho = "";
+
+  /* ---- carrinho ---- */
+  function renderCart() {
+    $("cart-count").textContent = cart.length;
+    const items = cart.map((id) => byId[id]);
+    const total = items.reduce((s, i) => s + i.preco, 0);
+    const body = $("cart-body");
+    if (!items.length) {
+      body.innerHTML = '<p class="inst" style="padding-top:16px">Seu carrinho está vazio. Toque em “Adicionar” nos itens que quiser.</p>';
+      $("wa-link").setAttribute("aria-disabled", "true");
+      $("wa-link").href = "#";
+      return;
+    }
+    const n = Math.max(1, Math.min(parcelas, MAX_PARC));
+    const valores = dividir(total, n);
+    const datas = ["No fechamento", ...datasParcelas().slice(0, n - 1).map(fmtData)];
+    body.innerHTML = `
+      <div class="lines">${items.map((i) => `
+        <div class="line">
+          <div class="mini">${i.fotos && i.fotos.length ? `<img src="${esc(fsrc(i.fotos[0]))}" alt="">` : icon(i.categoria)}</div>
+          <div><div class="nm">${esc(i.nome)}${i.status === "reservado" ? ' <span class="ref">(reservado)</span>' : ""}</div><button class="rm" type="button" data-add="${i.id}">Remover</button></div>
+          <div class="pr">${brl(i.preco)}</div>
+        </div>`).join("")}
+      </div>
+      <div class="total"><span class="lbl">Total</span><span class="val">${brl2(total)}</span></div>
+      <div class="field">
+        <label for="parc">Forma de pagamento</label>
+        <select id="parc">${Array.from({ length: MAX_PARC }, (_, k) => k + 1).map((k) =>
+          `<option value="${k}" ${k === n ? "selected" : ""}>${k === 1 ? `À vista no PIX · ${brl2(total)}` : `${k}x de ${brl2(total / k)} sem juros`}</option>`).join("")}
+        </select>
+      </div>
+      ${n > 1 ? `<ul class="plan">${valores.map((v, k) => `<li><span>${k + 1}ª · ${datas[k]}</span><span>${brl2(v)}</span></li>`).join("")}</ul>` : ""}
+      <div class="field">
+        <label for="oferta-cart">Quer fazer uma oferta? (opcional)</label>
+        <div class="money"><span>R$</span><input id="oferta-cart" type="text" inputmode="decimal" autocomplete="off" placeholder="Sua oferta pelo carrinho" value="${esc(ofertaCarrinho)}"></div>
+      </div>
+      <div class="field">
+        <label for="nome">Seu nome (opcional)</label>
+        <input id="nome" type="text" autocomplete="name" placeholder="Como posso te chamar?" value="${esc(nome)}">
+      </div>
+      <p class="inst" style="margin:0">Pagamento via PIX ${esc(CONTATO.pix)} (${esc(CONTATO.banco)}). Entrega a combinar.</p>`;
+    $("parc").addEventListener("change", (e) => { parcelas = +e.target.value; store.set("bazar-parc", parcelas); renderCart(); });
+    $("nome").addEventListener("input", (e) => { nome = e.target.value; store.set("bazar-nome", nome); updateWa(items, total, n, valores, datas); });
+    $("oferta-cart").addEventListener("input", (e) => { ofertaCarrinho = e.target.value; updateWa(items, total, n, valores, datas); });
+    updateWa(items, total, n, valores, datas);
+  }
+  function updateWa(items, total, n, valores, datas) {
+    const oferta = valorDigitado(ofertaCarrinho);
+    const linhas = [
+      `Olá! ${nome.trim() ? `Aqui é ${nome.trim()}. ` : ""}Tenho interesse nestes itens do Lulu Vende Tudo:`,
+      "",
+      ...items.map((i) => `• ${i.nome} — ${brl(i.preco)}${i.status === "reservado" ? " (está reservado)" : ""}`),
+      "",
+      ...(oferta
+        ? [`Total anunciado: ${brl2(total)}`, `Minha oferta: ${brl2(oferta)}`, n === 1 ? "Pagamento: à vista no PIX" : `Pagamento: em ${n}x sem juros`]
+        : [`Total: ${brl2(total)}`, n === 1 ? "Pagamento: à vista no PIX" : `Pagamento: ${n}x sem juros`,
+           ...(n > 1 ? valores.map((v, k) => `  ${k + 1}ª (${datas[k].toLowerCase()}): ${brl2(v)}`) : [])]),
+      "",
+      "Podemos combinar a entrega?",
+    ];
+    const a = $("wa-link");
+    a.href = `https://wa.me/${CONTATO.whatsapp}?text=${encodeURIComponent(linhas.join("\n"))}`;
+    a.removeAttribute("aria-disabled");
+  }
+
+  /* ---- dialogs ---- */
+  $("open-cart").addEventListener("click", () => { renderCart(); $("cart").showModal(); });
+  document.querySelectorAll("dialog").forEach((d) => d.addEventListener("click", (e) => {
+    if (e.target === d || e.target.closest("[data-close]")) d.close();
+  }));
+
+  /* ---- copiar PIX ---- */
+  $("copy-pix").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(CONTATO.pix.replace(/\s/g, "")); toast("Chave PIX copiada"); }
+    catch { const r = document.createRange(); r.selectNodeContents($("pix-key")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selecionado. Copie com Ctrl/Cmd + C"); }
+  });
+
+  let tt;
+  function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(tt); tt = setTimeout(() => (t.hidden = true), 2400); }
+
+  renderFilters(); renderGrid(); renderCart();
+})();
+</script>
+
+</body>
+</html>
